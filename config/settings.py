@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-from dotenv import load_dotenv
 from pathlib import Path
 
 
@@ -35,6 +34,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -120,7 +120,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'uz'
+
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'uz'
+
+LANGUAGES = (
+    ('ru', 'Russian'),
+    ('en', 'English'),
+    ('uz', 'Uzbek'),
+    ('de', 'Deutsch'),
+)
+
+MODELTRANSLATION_LANGUAGES = ('ru', 'en', 'de', 'uz')
+MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'en'
 
 TIME_ZONE = 'Asia/Tashkent'
 
@@ -128,6 +140,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+MODELTRANSLATION_TRANSLATION_FILES = (
+
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

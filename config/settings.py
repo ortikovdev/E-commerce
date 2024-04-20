@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from datetime import timedelta
+from django.utils.translation import gettext_lazy as _
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -48,6 +51,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     # 'drf_spectacular_sidecar',
+    'django_filters',
+    'apps.account'
 ]
 
 MIDDLEWARE = [
@@ -55,6 +60,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # multiple languages
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -63,6 +69,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+AUTH_USER_MODEL = 'account.User'
 
 TEMPLATES = [
     {
@@ -125,10 +133,10 @@ LANGUAGE_CODE = 'uz'
 MODELTRANSLATION_DEFAULT_LANGUAGE = 'uz'
 
 LANGUAGES = (
-    ('ru', 'Russian'),
-    ('en', 'English'),
-    ('uz', 'Uzbek'),
-    ('de', 'Deutsch'),
+    ('ru', _('Russian')),
+    ('en', _('English')),
+    ('uz', _('Uzbek')),
+    ('de', _('Deutsch')),
 )
 
 MODELTRANSLATION_LANGUAGES = ('ru', 'en', 'de', 'uz')

@@ -26,8 +26,7 @@ from rest_framework_simplejwt.views import (
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/schema/download/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
@@ -36,5 +35,5 @@ urlpatterns = [
 ]
 
 urlpatterns += i18n_patterns(
-
+    path('admin/', admin.site.urls),
 )

@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'drf_spectacular',
     # 'drf_spectacular_sidecar',
     'django_filters',
-    'apps.account'
+    'apps.account',
+    'apps.product',
+    'apps.order',
 ]
 
 MIDDLEWARE = [
@@ -153,7 +155,7 @@ LOCALE_PATHS = [
 ]
 
 MODELTRANSLATION_TRANSLATION_FILES = (
-
+    'apps.product.translations',
 )
 
 # Static files (CSS, JavaScript, Images)

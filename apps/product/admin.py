@@ -28,7 +28,7 @@ class ProductImageInline(admin.TabularInline):
 class ProductAdmin(TranslationAdmin):
     inlines = (ProductImageInline,)
     list_display = ('id', 'name', 'category', 'price', 'created_date')
-    readonly_fields = ('modified_date', 'created_date')
+    readonly_fields = ('average_rank', 'views', 'get_like_count', 'get_quantity', 'is_available', 'modified_date', 'created_date')
     date_hierarchy = 'created_date'
     search_fields = ('name', 'category__name')
     list_filter = ('category', )
@@ -36,7 +36,7 @@ class ProductAdmin(TranslationAdmin):
 
 @admin.register(Trade)
 class TradeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product', 'quantity', 'price', 'created_date')
+    list_display = ('id', 'product', 'quantity', 'created_date')
     date_hierarchy = 'created_date'
     search_fields = ('product__name', )
 

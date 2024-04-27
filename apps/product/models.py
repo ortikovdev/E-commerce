@@ -9,11 +9,13 @@ from apps.account.models import User
 class Category(models.Model):
     name = models.CharField(max_length=100)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL)
+    order = models.IntegerField(null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name_plural = 'Categories'
+        ordering = ('order', 'id')
 
     def __str__(self):
         return self.name
@@ -33,15 +35,18 @@ class Product(models.Model):
 
     @property
     def average_rank(self):
-        return sum(self.ranks.values_list('rank', flat=True))/len(self.ranks.count())
+        try:
+            return sum(self.ranks.values_list('rank', flat=True))/self.ranks.count() or 0
+        except ZeroDivisionError:
+            return 0
 
     @property
     def get_like_count(self):
         return self.likes.count()
 
     def get_quantity(self) -> int:
-        incomes = self.trades.filter(quantity=1).count()
-        outcomes = self.trades.filter(quantity=1).count()
+        incomes = sum(self.trades.filter(action=1).values_list('quantity', flat=True))
+        outcomes = sum(self.trades.filter(action=2).values_list('quantity', flat=True))
         return incomes - outcomes
 
     def is_available(self) -> bool:
@@ -66,7 +71,7 @@ class Trade(models.Model):
     action = models.PositiveSmallIntegerField(choices=ACTION, default=1)
     quantity = models.PositiveIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.product.name
@@ -124,6 +129,7 @@ def comment_pre_save(sender, instance, **kwargs):
         instance.top_level_comment_id = instance.parent.top_level_comment_id
     else:
         instance.top_level_comment_id = instance.id
+    instance.save()
 
 
 pre_save.connect(comment_pre_save, sender=Comment)

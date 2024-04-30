@@ -9,6 +9,7 @@ from apps.product.models import (
     Like,
     Rank,
     Comment,
+    Tag,
 )
 
 
@@ -17,6 +18,13 @@ class CategoryImageInline(TranslationAdmin):
     list_display = ('id', 'name', 'created_date')
     date_hierarchy = 'created_date'
     search_fields = ('name', )
+
+
+@admin.register(Tag)
+class TagAdmin(TranslationAdmin):
+    list_display = ('id', 'name', 'created_date')
+    # readonly_fields = ('created_date', )
+    search_fields = ('name',)
 
 
 class ProductImageInline(admin.TabularInline):

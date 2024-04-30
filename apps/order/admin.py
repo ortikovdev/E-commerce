@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CartItem, Order
+from .models import CartItem, Order, Promo
 
 
 @admin.register(CartItem)
@@ -10,6 +10,15 @@ class CartItemAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_date'
     readonly_fields = ('created_date', 'modified_date')
     ordering = ('-created_date',)
+
+
+@admin.register(Promo)
+class PromoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'user', 'discount', 'min_price', 'expire_date', 'is_expired')
+    list_filter = ('is_expired',)
+    filter_horizontal = ('members',)
+    date_hierarchy = 'created_date'
+    readonly_fields = ('created_date',)
 
 
 @admin.register(Order)

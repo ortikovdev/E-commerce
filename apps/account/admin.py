@@ -26,7 +26,7 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(UserToken)
 class UserTokenAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'token', 'created_date')
+    list_display = ('id', 'user', 'is_used', 'token', 'created_date')
     date_hierarchy = 'created_date'
     search_fields = ('user__username', 'user_full_name', 'token')
 

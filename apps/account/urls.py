@@ -15,11 +15,17 @@ Reset Password:
     - /reset/password/ -> reset password
 """
 
-from .views import UserRegisterView
 from django.urls import path
+from .views import (
+    UserRegisterView,
+    SendEmailView,
+    VerifyEmailView,
+)
 
 urlpatterns = [
     path('register/', UserRegisterView.as_view(), name='register'),
+    path('mail/send/', SendEmailView.as_view(), name='mail-send'),
+    path('mail/verify/', VerifyEmailView.as_view(), name='mail-verify'),
 ]
 
 

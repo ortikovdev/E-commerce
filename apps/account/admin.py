@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, UserToken
 from .forms import UserChangeForm, UserCreationForm
 
 
@@ -24,4 +24,14 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('email', 'full_name')
 
 
+@admin.register(UserToken)
+class UserTokenAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'token', 'created_date')
+    date_hierarchy = 'created_date'
+    search_fields = ('user__username', 'user_full_name', 'token')
+
+
 admin.site.register(User, UserAdmin)
+
+admin.site.index_title = _('Ecommerce administration')
+admin.site.site_header = _('Ecommerce')

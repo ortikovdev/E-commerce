@@ -1,6 +1,9 @@
+import random
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
+from django.db.models.signals import pre_save
 from django.utils.translation import gettext_lazy as _
 
 
@@ -40,3 +43,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class UserToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.PositiveIntegerField()
+    is_used = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+
+def user_token_pre_save(sender, instance, *args, **kwargs):
+    if not instance.token:
+        instance.token = random.randint(10000, 99999)
+
+
+pre_save.connect(user_token_pre_save, sender=UserToken)

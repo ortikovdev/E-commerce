@@ -15,6 +15,14 @@ Reset Password:
     - /reset/password/ -> reset password
 """
 
+from .views import UserRegisterView
+from django.urls import path
+
+urlpatterns = [
+    path('register/', UserRegisterView.as_view(), name='register'),
+]
+
+
 # reset password
 """
     1- Submit email form                          //PasswordResetView.as_view()

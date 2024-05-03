@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.signals import pre_save
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError
@@ -34,6 +35,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.PositiveIntegerField(validators=[MaxValueValidator(100)])
     views = models.PositiveIntegerField(default=0)
     description = models.TextField(null=True, blank=True)
     modified_date = models.DateTimeField(auto_now=True)

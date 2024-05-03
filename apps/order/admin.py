@@ -24,4 +24,7 @@ class PromoAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'is_delivered', 'created_date')
+    date_hierarchy = 'created_date'
+    list_filter = ('is_delivered',)
+    readonly_fields = ('get_amount', 'created_date', 'modified_date')
     search_fields = ('user__username', 'user__full_name')

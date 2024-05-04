@@ -20,12 +20,16 @@ from .views import (
     UserRegisterView,
     SendEmailView,
     VerifyEmailView,
+    LoginView,
 )
+
+app_name = 'account'
 
 urlpatterns = [
     path('register/', UserRegisterView.as_view(), name='register'),
     path('mail/send/', SendEmailView.as_view(), name='mail-send'),
     path('mail/verify/', VerifyEmailView.as_view(), name='mail-verify'),
+    path('login/', LoginView.as_view(), name='login'),
 ]
 
 

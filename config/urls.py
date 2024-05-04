@@ -36,5 +36,6 @@ urlpatterns = [
 
 urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
-    path('acccount/', include('apps.account.urls')),
+    path('acccount/', include('apps.account.urls', namespace='account')),
+    path('product/', include('apps.product.urls', namespace='product')),
 )

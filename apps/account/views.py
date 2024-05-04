@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.account.tasks import ecommerce_send_email
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from apps.account.models import User, UserToken
 from apps.account.serializers import (
     UserRegisterSerializer,
@@ -63,3 +67,7 @@ class VerifyEmailView(generics.CreateAPIView):
         }
 
         return Response(obtain_tokens, status=status.HTTP_200_OK)
+
+
+class LoginView(TokenObtainPairView):
+    pass

@@ -15,7 +15,7 @@ from apps.product.models import (
 
 @admin.register(Category)
 class CategoryImageInline(TranslationAdmin):
-    list_display = ('id', 'name', 'created_date')
+    list_display = ('id', 'name', 'parent', 'created_date')
     date_hierarchy = 'created_date'
     search_fields = ('name', )
 

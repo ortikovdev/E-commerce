@@ -3,6 +3,7 @@ import email
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.account.models import User, UserToken
 
@@ -48,6 +49,9 @@ class SendEmailSerializer(serializers.Serializer):
 
 
 class VerifyEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    token = serializers.IntegerField()
+
     class Meta:
         fields = ['email', 'token']
 
@@ -55,8 +59,8 @@ class VerifyEmailSerializer(serializers.Serializer):
         email = attrs.get('email')
         token = attrs.get('token')
 
-        if UserToken.objects.filter(email=email, token=token).exists():
-            user_token = UserToken.objects.filter(email__email=email).last()
+        if UserToken.objects.filter(user__email=email).exists():
+            user_token = UserToken.objects.filter(user__email=email).last()
             if user_token.is_used:
                 raise ValidationError({'email': 'Verification code is already used.'})
             if token != user_token.token:
@@ -66,5 +70,15 @@ class VerifyEmailSerializer(serializers.Serializer):
             user_token.is_active = True
             user_token.save()
             user.save()
+            return attrs
 
         raise ValidationError({'email': 'Credentials are not valid'})
+
+
+class CustomTokenObtainSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['email'] = user.email
+        token['created_date'] = user.created_date.strftime('%d.%m.%Y %H:%M:%S')
+        return token

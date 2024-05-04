@@ -18,6 +18,15 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
         ordering = ('order', 'id')
 
+    def get_parents(self):
+        parents = [self]
+        category = self
+        while category.parent:
+            parents.append(category.parent)
+            category = category.parent
+            print(parents)
+        return parents
+
     def __str__(self):
         return self.name
 

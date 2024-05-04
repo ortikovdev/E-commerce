@@ -13,6 +13,7 @@ from apps.account.serializers import (
     UserRegisterSerializer,
     SendEmailSerializer,
     VerifyEmailSerializer,
+    ChangePasswordSerializer,
 )
 
 
@@ -71,3 +72,17 @@ class VerifyEmailView(generics.CreateAPIView):
 
 class LoginView(TokenObtainPairView):
     pass
+
+
+class ChangePasswordView(generics.GenericAPIView):
+    serializer_class = ChangePasswordSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = {
+            'success': True,
+            'detail': 'Your password has been changed.'
+        }
+        return Response(data, status=status.HTTP_200_OK)

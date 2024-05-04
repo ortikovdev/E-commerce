@@ -82,3 +82,31 @@ class CustomTokenObtainSerializer(TokenObtainPairSerializer):
         token['email'] = user.email
         token['created_date'] = user.created_date.strftime('%d.%m.%Y %H:%M:%S')
         return token
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        fields = ['old_password', 'password', 'new_password']
+
+    def validate(self, attrs):
+        old_password = attrs.get('old_password')
+        password = attrs.get('password')
+        new_password = attrs.get('password2')
+
+        if self.context['faa'].user.check_password(old_password):
+            if password == new_password:
+                return attrs
+            raise ValidationError('Passwords did not match')
+        raise ValidationError({'old_password': 'old password did not match'})
+
+    def create(self, validated_data):
+        password = validated_data.get('password')
+        user = self.context['request'].user
+        user.set_password(password)
+        user.save()
+        return user
+

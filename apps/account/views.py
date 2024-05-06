@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -15,7 +15,10 @@ from apps.account.serializers import (
     VerifyEmailSerializer,
     ChangePasswordSerializer,
     ResetPasswordSerializer,
+    UserProfileSerializer,
 )
+from .permissions import IsOwnerOrReadOnly
+
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -102,3 +105,18 @@ class ResetPasswordView(generics.GenericAPIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
+
+class UserProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserProfileSerializer
+    queryset = User.objects.filter(is_active=True)
+    permission_classes = (IsOwnerOrReadOnly,)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_active = False
+        instance.save()
+        data = {
+            'success': True,
+            'detail': 'Your account has been deactivated successfully.'
+        }
+        return Response(data, status=status.HTTP_200_OK)

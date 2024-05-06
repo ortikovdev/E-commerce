@@ -132,3 +132,9 @@ class ResetPasswordSerializer(serializers.Serializer):
         return user
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id', 'email', 'full_name', 'avatar', 'is_active', 'is_superuser', 'is_staff', 'modified_date', 'created_date'
+        )

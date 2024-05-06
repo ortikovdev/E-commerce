@@ -15,7 +15,8 @@ Reset Password:
     - /reset/password/ -> reset password
 """
 
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
     UserRegisterView,
     SendEmailView,
@@ -23,9 +24,12 @@ from .views import (
     LoginView,
     ChangePasswordView,
     ResetPasswordView,
+    UserProfileRUDView,
 )
 
 app_name = 'account'
+
+router = DefaultRouter()
 
 urlpatterns = [
     path('register/', UserRegisterView.as_view(), name='register'),
@@ -34,6 +38,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('change/password/', ChangePasswordView.as_view(), name='change-password'),
     path('reset/password/', ResetPasswordView.as_view(), name='reset-password'),
+    path('profile/<int:pk>/', UserProfileRUDView.as_view(), name='profile'),
 ]
 
 

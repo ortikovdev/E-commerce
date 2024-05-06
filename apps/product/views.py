@@ -1,5 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
 from .models import (
     Category,
 )
@@ -11,28 +13,23 @@ from .permissions import (
 )
 
 
-class CategoryViewSet(viewsets.ViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = [IsAdminOrReadOnly]
+    filter_backends = (SearchFilter,)
+    search_fields = ['name']
 
     def get_queryset(self):
         return Category.objects.filter(parent__isnull=True)
 
-
-    # def list(self, request):
-    #     queryset = self.queryset
-    #     serializer = self.serializer_class(queryset, many=True)
-    #     return Response(serializer.data)
-    #
-    # def retrieve(self, request, pk=None):
-    #     category = self.queryset.get(pk=pk)
-    #     serializer = self.serializer_class(category)
-    #     return Response(serializer.data)
-    #
-    # def search_category(self, request, category_id):
-    #     category = Category.objects.get(pk=category_id)
-    #     parents = category.get_parents()
-    #     queryset = Category.objects.filter(id__in=parents)
-    #     serializer = self.serializer_class(queryset, many=True)
-    #     return Response(serializer.data)
+    def get_object(self):
+        queryset = self.queryset
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        assert lookup_url_kwarg in self.kwargs, (
+            (self.__class__.__name__, lookup_url_kwarg),
+        )
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj

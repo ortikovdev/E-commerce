@@ -22,6 +22,7 @@ from .views import (
     VerifyEmailView,
     LoginView,
     ChangePasswordView,
+    ResetPasswordView,
 )
 
 app_name = 'account'
@@ -32,6 +33,7 @@ urlpatterns = [
     path('mail/verify/', VerifyEmailView.as_view(), name='mail-verify'),
     path('login/', LoginView.as_view(), name='login'),
     path('change/password/', ChangePasswordView.as_view(), name='change-password'),
+    path('reset/password/', ResetPasswordView.as_view(), name='reset-password'),
 ]
 
 

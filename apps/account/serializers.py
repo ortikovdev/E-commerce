@@ -86,19 +86,19 @@ class CustomTokenObtainSerializer(TokenObtainPairSerializer):
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True)
+    confirming_password = serializers.CharField(write_only=True)
 
     class Meta:
-        fields = ['old_password', 'password', 'new_password']
+        fields = ['old_password', 'new_password', 'confirming_password']
 
     def validate(self, attrs):
         old_password = attrs.get('old_password')
-        password = attrs.get('password')
-        new_password = attrs.get('password2')
+        new_password = attrs.get('new_password')
+        confirming_password = attrs.get('confirming_password')
 
-        if self.context['faa'].user.check_password(old_password):
-            if password == new_password:
+        if self.context['request'].user.check_password(old_password):
+            if new_password == confirming_password:
                 return attrs
             raise ValidationError('Passwords did not match')
         raise ValidationError({'old_password': 'old password did not match'})
@@ -109,4 +109,26 @@ class ChangePasswordSerializer(serializers.Serializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        confirm_password = attrs.get('confirm_password')
+        if self.context['request'].user.check_password(password):
+            raise ValidationError('Current password must not be the same with new password')
+        if password == confirm_password:
+            return attrs
+        raise ValidationError({'password': 'Passwords did not match'})
+
+    def create(self, validated_data):
+        password = validated_data.get('password')
+        user = self.context['request'].user
+        user.set_password(password)
+        user.save()
+        return user
+
 

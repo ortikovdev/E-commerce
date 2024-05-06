@@ -14,6 +14,7 @@ from apps.account.serializers import (
     SendEmailSerializer,
     VerifyEmailSerializer,
     ChangePasswordSerializer,
+    ResetPasswordSerializer,
 )
 
 
@@ -78,7 +79,7 @@ class ChangePasswordView(generics.GenericAPIView):
     serializer_class = ChangePasswordSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         data = {
@@ -86,3 +87,18 @@ class ChangePasswordView(generics.GenericAPIView):
             'detail': 'Your password has been changed.'
         }
         return Response(data, status=status.HTTP_200_OK)
+
+
+class ResetPasswordView(generics.GenericAPIView):
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = {
+            'success': True,
+            'detail': 'Your password has been reset.'
+        }
+        return Response(data, status=status.HTTP_200_OK)
+

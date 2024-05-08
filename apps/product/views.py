@@ -1,18 +1,18 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from .models import (
     Category,
-    Tag, Product, ProductImage,
+    Tag, Product, ProductImage, Trade,
 )
-from .serializer import (
+from .serializers import (
     CategorySerializer,
     TagSerializer,
     ProductSerializer,
     ProductPostSerializer,
-    ProductImageSerializer,
+    ProductImageSerializer, TradeSerializer, TradePostSerializer,
 )
 from .permissions import (
     IsAdminOrReadOnly,
@@ -88,3 +88,25 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         ctx = super().get_serializer_context()
         ctx['pid'] = pid
         return ctx
+
+
+class TradeViewSet(viewsets.ModelViewSet):
+    queryset = Trade.objects.all()
+    serializer_class = TradeSerializer
+    serializer_post_class = TradePostSerializer
+    permission_classes = [permissions.IsAdminUser]
+    filter_backends = (SearchFilter, DjangoFilterBackend)
+    search_fields = ['product__name']
+    filterset_fields = ['action', 'product']
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return self.serializer_post_class
+        return self.serializer_post_class
+
+    def create(self, request, *args, **kwargs):
+        obj_id = super().create(request, *args, **kwargs).data.get('id')
+        obj = get_object_or_404(Trade, id=obj_id)
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+

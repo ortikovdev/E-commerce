@@ -46,6 +46,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.PositiveIntegerField(validators=[MaxValueValidator(100)])
     views = models.PositiveIntegerField(default=0)
+    sold_count = models.PositiveIntegerField(default=0)
     description = models.TextField(null=True, blank=True)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)

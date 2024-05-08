@@ -58,6 +58,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = (SearchFilter, DjangoFilterBackend)
     search_fields = ['name']
     filterset_fields = ['category', 'tags']
+    ordering_fields = ['views', 'id', 'sold_count']
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

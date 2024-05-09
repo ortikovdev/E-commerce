@@ -100,3 +100,21 @@ class TradePostSerializer(serializers.ModelSerializer):
         validated_data['user_id'] = user.id
         return super().create(validated_data)
 
+
+class WishListSerializer(serializers.ModelSerializer):
+    product = MiniProductSerializer(read_only=True)
+
+    class Meta:
+        model = Wishlist
+        fields = ['id', 'product', 'user']
+
+
+class WishListPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wishlist
+        fields = ['id', 'product']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user_id'] = user.id
+        return super().create(validated_data)

@@ -7,6 +7,7 @@ from .views import (
     ProductViewSet,
     ProductImageViewSet,
     TradeViewSet,
+    WishlistViewSet,
 )
 
 app_name = 'product'
@@ -16,6 +17,7 @@ router.register('categories', CategoryViewSet)
 router.register('tags', TagViewSet)
 router.register('product_list', ProductViewSet)
 router.register(r'(?P<pid>[0-9]+)/images', ProductImageViewSet)
+router.register('wishlist', WishlistViewSet)
 router.register('trades', TradeViewSet)
 
 urlpatterns = [

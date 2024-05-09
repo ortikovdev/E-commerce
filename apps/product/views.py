@@ -5,18 +5,27 @@ from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from .models import (
     Category,
-    Tag, Product, ProductImage, Trade,
+    Tag,
+    Product,
+    ProductImage,
+    Trade,
+    Wishlist,
 )
 from .serializers import (
     CategorySerializer,
     TagSerializer,
     ProductSerializer,
     ProductPostSerializer,
-    ProductImageSerializer, TradeSerializer, TradePostSerializer,
+    ProductImageSerializer,
+    TradeSerializer,
+    TradePostSerializer,
+    WishListSerializer,
+    WishListPostSerializer,
 )
 from .permissions import (
     IsAdminOrReadOnly,
 )
+from ..utils.mixins import CreateViewSetMixin
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -49,7 +58,7 @@ class TagViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(CreateViewSetMixin, viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     serializer_post_class = ProductPostSerializer
@@ -59,11 +68,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
     filterset_fields = ['category', 'tags']
     ordering_fields = ['views', 'id', 'sold_count']
-
-    def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
-            return super().get_serializer_class()
-        return self.serializer_post_class
 
     def create(self, request, *args, **kwargs):
         obj_id = super().create(request, *args, **kwargs).get('id')
@@ -90,8 +94,9 @@ class ProductImageViewSet(viewsets.ModelViewSet):
         return ctx
 
 
-class TradeViewSet(viewsets.ModelViewSet):
+class TradeViewSet(CreateViewSetMixin, viewsets.ModelViewSet):
     queryset = Trade.objects.all()
+    model = Trade
     serializer_class = TradeSerializer
     serializer_post_class = TradePostSerializer
     permission_classes = [permissions.IsAdminUser]
@@ -109,4 +114,14 @@ class TradeViewSet(viewsets.ModelViewSet):
         obj = get_object_or_404(Trade, id=obj_id)
         serializer = self.get_serializer(obj)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class WishlistViewSet(CreateViewSetMixin, viewsets.ModelViewSet):
+    model = Wishlist
+    queryset = Wishlist.objects.all()
+    serializer_class = WishListSerializer
+    serializer_post_class = WishListPostSerializer
+    permission_classes = []
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['product__name']
 

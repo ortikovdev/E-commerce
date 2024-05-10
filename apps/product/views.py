@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
+from .permissions import IsAuthorOrReadOnly
 from .models import (
     Category,
     Tag,
@@ -10,6 +11,8 @@ from .models import (
     ProductImage,
     Trade,
     Wishlist,
+    Comment,
+    CommentImage,
 )
 from .serializers import (
     CategorySerializer,
@@ -21,6 +24,7 @@ from .serializers import (
     TradePostSerializer,
     WishListSerializer,
     WishListPostSerializer,
+    CommentSerializer,
 )
 from .permissions import (
     IsAdminOrReadOnly,
@@ -125,3 +129,16 @@ class WishlistViewSet(CreateViewSetMixin, viewsets.ModelViewSet):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['product__name']
 
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.filter(product__category__parent__isnull=True)
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthorOrReadOnly]
+
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        ctx['pid'] = self.kwargs.get('pid')
+        return ctx
+
+    def update(self, request, *args, **kwargs):
+        pass

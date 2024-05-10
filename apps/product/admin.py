@@ -10,6 +10,7 @@ from apps.product.models import (
     Rank,
     Comment,
     Tag,
+    CommentImage,
 )
 
 
@@ -69,8 +70,15 @@ class RankAdmin(admin.ModelAdmin):
     list_filter = ('rank', )
 
 
+class CommentImageInlineAdmin(admin.TabularInline):
+    model = CommentImage
+    extra = 0
+
+
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
+    inlines = (CommentImageInlineAdmin,)
     list_display = ('id', 'product', 'user', 'top_level_comment_id', 'created_date')
     date_hierarchy = 'created_date'
     search_fields = ('product__name', 'user__name', 'parent__name')
+    readonly_fields = ('top_level_comment_id', 'created_date')

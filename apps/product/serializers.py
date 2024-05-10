@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, viewsets
 from .models import (
     Category,
     Tag,
@@ -8,8 +8,10 @@ from .models import (
     Like,
     Wishlist,
     Rank,
-    Comment
+    Comment,
+    CommentImage,
 )
+
 from ..account.serializers import UserProfileSerializer
 
 
@@ -118,3 +120,30 @@ class WishListPostSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validated_data['user_id'] = user.id
         return super().create(validated_data)
+
+
+class CommentImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentImage
+        fields = ['id', 'image', 'comment']
+
+    def create(self, validated_data):
+        validated_data['comment_id'] = self.context['cid']
+        return super().create(validated_data)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    images = CommentImageSerializer(many=True)
+    user = UserProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'comment', 'images', 'top_level_comment_id', 'created_date']
+
+    def create(self, validated_data):
+        images = validated_data.pop('images', [])
+        validated_data['user_id'] = self.context['request'].user.id
+        validated_data['product_id'] = self.context['pid']
+        obj = super().create(validated_data)
+        for image in images:
+            CommentImage.objects.create(comment=validated_data['comment'], images=open(image['image'], 'rb'))

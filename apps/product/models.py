@@ -135,6 +135,7 @@ class Rank(models.Model):
 
 
 class Comment(models.Model):
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.SET_NULL)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     comment = models.TextField()
@@ -143,6 +144,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.product.name
+
+
+class CommentImage(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.SET_NULL, null=True, related_name='images')
+    image = models.ImageField(upload_to='comments/%Y/%m/%d/')
 
 
 def comment_pre_save(sender, instance, **kwargs):

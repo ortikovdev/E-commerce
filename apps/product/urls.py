@@ -8,6 +8,7 @@ from .views import (
     ProductImageViewSet,
     TradeViewSet,
     WishlistViewSet,
+    CommentViewSet,
 )
 
 app_name = 'product'
@@ -19,6 +20,7 @@ router.register('product_list', ProductViewSet)
 router.register(r'(?P<pid>[0-9]+)/images', ProductImageViewSet)
 router.register('wishlist', WishlistViewSet)
 router.register('trades', TradeViewSet)
+router.register(r'(?P<pid>[0-9]+)/comments', CommentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -13,6 +13,8 @@ from .models import (
     Wishlist,
     Comment,
     CommentImage,
+    Rank,
+    Like,
 )
 from .serializers import (
     CategorySerializer,
@@ -25,6 +27,8 @@ from .serializers import (
     WishListSerializer,
     WishListPostSerializer,
     CommentSerializer,
+    RankSerializer,
+    LikeSerializer,
 )
 from .permissions import (
     IsAdminOrReadOnly,
@@ -130,8 +134,25 @@ class WishlistViewSet(CreateViewSetMixin, viewsets.ModelViewSet):
     search_fields = ['product__name']
 
 
+class RankViewSet(viewsets.ModelViewSet):
+    queryset = Rank.objects.all()
+    serializer_class = RankSerializer
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['product__name']
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Rank.objects.all()
+        return Rank.objects.none()
+
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        ctx['pid'] = self.kwargs.get('pid')
+        return ctx
+
+
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.filter(product__category__parent__isnull=True)
+    queryset = Comment.objects.filter(parent__isnull=True)
     serializer_class = CommentSerializer
     permission_classes = [IsAuthorOrReadOnly]
 
@@ -142,3 +163,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         pass
+
+    def get_object(self):
+        queryset = self.queryset
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        assert lookup_url_kwarg in self.kwargs, (
+            (self.__class__.__name__, lookup_url_kwarg),
+        )
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        obj = get_object_or_404(Comment, **filter_kwargs)
+        self.check_object_permissions(self.request, obj)
+        return obj

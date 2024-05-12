@@ -122,6 +122,32 @@ class WishListPostSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id', 'product']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user_id'] = user.id
+        return super().create(validated_data)
+
+
+class RankSerializer(serializers.ModelSerializer):
+    product = MiniProductSerializer(read_only=True)
+
+    class Meta:
+        model = Rank
+        fields = ['id', 'product', 'rank']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        pid = self.context['pid']
+        validated_data['user_id'] = user.id
+        validated_data['product_id'] = pid
+        return super().create(validated_data)
+
+
 class CommentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentImage
@@ -135,10 +161,17 @@ class CommentImageSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     images = CommentImageSerializer(many=True)
     user = UserProfileSerializer(read_only=True)
+    children = serializers.SerializerMethodField(read_only=True)
+
+    def get_children(self, obj):
+        if obj.children is None:
+            return CommentSerializer(obj.children, many=True).data
+        return []
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'comment', 'images', 'top_level_comment_id', 'created_date']
+        fields = ['id', 'parent', 'user', 'comment', 'top_level_comment_id', 'children', 'images', 'created_date']
+        read_only_fields = ['children']
 
     def create(self, validated_data):
         images = validated_data.pop('images', [])
@@ -147,3 +180,4 @@ class CommentSerializer(serializers.ModelSerializer):
         obj = super().create(validated_data)
         for image in images:
             CommentImage.objects.create(comment=validated_data['comment'], images=open(image['image'], 'rb'))
+

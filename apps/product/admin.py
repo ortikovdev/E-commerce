@@ -43,7 +43,6 @@ class ProductAdmin(TranslationAdmin):
     list_filter = ('category', )
 
 
-
 @admin.register(Trade)
 class TradeAdmin(admin.ModelAdmin):
     list_display = ('id', 'product', 'quantity', 'created_date')

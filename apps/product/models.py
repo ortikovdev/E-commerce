@@ -65,11 +65,13 @@ class Product(models.Model):
     def get_like_count(self):
         return self.likes.count()
 
+    @property
     def get_quantity(self) -> int:
         incomes = sum(self.trades.filter(action=1).values_list('quantity', flat=True))
         outcomes = sum(self.trades.filter(action=2).values_list('quantity', flat=True))
         return incomes - outcomes
 
+    @property
     def is_available(self) -> bool:
         return self.get_quantity() > 0
 
@@ -143,7 +145,10 @@ class Comment(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.product.name
+        return f'{self.product.name} (pid: {self.product_id} -> cid: {self.id})'
+
+    def children(self):
+        return Comment.objects.filter(top_level_comment_id=self.id)
 
 
 class CommentImage(models.Model):

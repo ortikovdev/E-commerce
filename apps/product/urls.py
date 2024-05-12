@@ -8,6 +8,8 @@ from .views import (
     ProductImageViewSet,
     TradeViewSet,
     WishlistViewSet,
+    LikeSerializer,
+    RankViewSet,
     CommentViewSet,
 )
 
@@ -16,11 +18,13 @@ app_name = 'product'
 router = DefaultRouter()
 router.register('categories', CategoryViewSet)
 router.register('tags', TagViewSet)
-router.register('product_list', ProductViewSet)
 router.register(r'(?P<pid>[0-9]+)/images', ProductImageViewSet)
+router.register('(trades)', TradeViewSet)
 router.register('wishlist', WishlistViewSet)
-router.register('trades', TradeViewSet)
+# router.register('likes', LikeViewSet)
+router.register(r'(?P<pid>[0-9]+)/ranks', RankViewSet)
 router.register(r'(?P<pid>[0-9]+)/comments', CommentViewSet)
+router.register('product_list', ProductViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

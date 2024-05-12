@@ -4,12 +4,11 @@ from .models import CartItem, Order, Promo
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product', 'unit_price', 'quantity', 'is_ordered', 'created_date')
-    list_filter = ('product__name', 'is_ordered')
-    search_fields = ('product__title', 'user')
+    list_display = ('id', 'user', 'product', 'quantity', 'get_amount', 'is_ordered', 'created_date')
+    search_fields = ('product__title', 'user__username', 'user__full_name')
     date_hierarchy = 'created_date'
-    readonly_fields = ('created_date', 'modified_date')
-    ordering = ('-created_date',)
+    list_filter = ('is_ordered',)
+    readonly_fields = ('created_date',)
 
 
 @admin.register(Promo)
@@ -28,3 +27,5 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('is_delivered',)
     readonly_fields = ('get_amount', 'created_date', 'modified_date')
     search_fields = ('user__username', 'user__full_name')
+
+

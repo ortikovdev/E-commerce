@@ -22,7 +22,7 @@ class CartItem(models.Model):
 
     @property
     def get_amount(self):
-        return self.quantity * self.unit_price
+        return float(self.product.price) * ((self.product.discount or 1)/100)
 
 
 class Promo(models.Model):
@@ -40,11 +40,21 @@ class Promo(models.Model):
         return self.name
 
 
+class OrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name='order_items')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.PositiveIntegerField(validators=[MaxValueValidator(100)])
+    quantity = models.PositiveIntegerField(default=1)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     items = models.ManyToManyField(CartItem)
+    order_items = models.ManyToManyField(OrderItem)
     promo = models.CharField(max_length=8, null=True, blank=True)
-    is_delivered = models.BooleanField(default=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     modified_date = models.DateTimeField(auto_now=True)
     created_date = models.DateTimeField(auto_now_add=True)
 

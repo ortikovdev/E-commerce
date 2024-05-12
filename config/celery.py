@@ -14,10 +14,10 @@ app.conf.enable_utc = False
 app.conf.update(timezone='Asia/Tashkent')
 
 app.conf.beat_schedule = {
-    # # 'schedule_task_name': {
-    # #     'task': 'app.tasks.tasks_func',
-    # #     'schedule': crontab(minute=0, hour=8),
-    # }
+    'everyday-at-night': {
+        'task': 'app.order.tasks.set_expire',
+        'schedule': crontab(minute='59', hour='23'),
+    }
 }
 
 # Using a string here means the worker doesn't have to serialize

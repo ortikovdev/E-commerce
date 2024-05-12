@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from apps.order.models import Order
 from apps.order.views import (
     OrderViewSet,
     CheckPromo,

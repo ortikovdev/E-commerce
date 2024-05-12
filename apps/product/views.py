@@ -171,6 +171,6 @@ class CommentViewSet(viewsets.ModelViewSet):
             (self.__class__.__name__, lookup_url_kwarg),
         )
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
-        obj = get_object_or_404(Comment, **filter_kwargs)
+        obj: object = get_object_or_404(queryset, **filter_kwargs)
         self.check_object_permissions(self.request, obj)
         return obj

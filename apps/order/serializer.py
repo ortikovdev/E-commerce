@@ -26,6 +26,8 @@ class PromoSerializer(serializers.ModelSerializer):
             raise ValidationError({'detail': 'Promo does not exist'})
         if user in promo.first().members.all():
             raise ValidationError({'detail': 'Promo already used'})
+        if user in promo.last().members.all():
+            return ValidationError({'detail': 'Promo already used'})
         return attrs
 
     def create(self, validated_data):
@@ -125,7 +127,11 @@ class OrderPostSerializer(serializers.ModelSerializer):
                 raise ValidationError({'detail': 'Promo expired'})
             if user in promo.first().members.all():
                 raise ValidationError({'detail': 'Promo already used'})
+            if promo.min_price > amount:
+                raise ValidationError({'detail': f'Must be less than or equal to {promo.min_price}'})
             amount = amount * (1 - promo.last().discount/100)
+            promo.members.add(self.context['request'].user)
         order.amount = amount
         order.save()
+        user.cart_items.all().delete()
         return order

@@ -38,4 +38,5 @@ urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     path('acccount/', include('apps.account.urls', namespace='account')),
     path('products/', include('apps.product.urls', namespace='product')),
+    path('orders/', include('apps.order.urls', namespace='order')),
 )
